@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <title>lexar.lol</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="terminal" aria-live="polite">
+      <div class="scanlines" aria-hidden="true"></div>
+      <section id="intro" class="terminal__content" aria-label="System information terminal">
+        <p class="terminal__brand">LEXAR // OBSERVER v1.0</p>
+        <div id="output" class="output"></div>
+        <p id="welcome" class="welcome" hidden>Welcome to lexar.lol<span class="cursor" aria-hidden="true"></span></p>
+        <button id="continue" class="continue" type="button" hidden>Continue <span aria-hidden="true">→</span></button>
+      </section>
+      <section id="portfolio" class="portfolio" hidden aria-label="Lexar portfolio">
+        <p class="eyebrow">// PORTFOLIO</p>
+        <h1>LEXAR<span class="dot">.</span></h1>
+        <p class="portfolio__intro">Building sharp digital experiences with a little more signal and a lot less noise.</p>
+        <nav class="socials" aria-label="Social links">
+          <a href="https://github.com/oklexar" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+          <a href="https://tiktok.com/@_lexar" target="_blank" rel="noreferrer">TikTok <span aria-hidden="true">↗</span></a>
+          <a href="https://x.com/lunarshine584" target="_blank" rel="noreferrer">X <span aria-hidden="true">↗</span></a>
+        </nav>
+      </section>
+    </main>
+    <script src="script.js" defer></script>
+  </body>
+</html>
