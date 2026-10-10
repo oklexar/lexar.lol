@@ -6,6 +6,7 @@ const portfolio = document.querySelector('#portfolio');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const WORKER_URL = 'https://discord-relay.rogo57157.workers.dev';
+
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function readable(value, fallback = 'unavailable') {
@@ -46,9 +47,7 @@ function browserDetails() {
     cookies: nav.cookieEnabled ? 'enabled' : 'disabled',
     'do not track': readable(nav.doNotTrack),
     online: nav.onLine ? 'yes' : 'no',
-    connection: connection
-      ? `${readable(connection.effectiveType)} / ${readable(connection.downlink)} Mbps`
-      : 'unavailable',
+    connection: connection ? `${readable(connection.effectiveType)} / ${readable(connection.downlink)} Mbps` : 'unavailable',
     touch_points: readable(nav.maxTouchPoints),
     cpu_threads: readable(nav.hardwareConcurrency),
     device_memory: nav.deviceMemory ? `${nav.deviceMemory} GB` : 'unavailable',
@@ -56,19 +55,14 @@ function browserDetails() {
 }
 
 async function sendToWorker(facts) {
-  const message = Object.entries(facts)
-    .map(([label, value]) => `${label}: ${value}`)
-    .join("\n")
-    .slice(0, 1800);
-
-  const response = await fetch(WORKER_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Worker request failed (${response.status})`);
+  try {
+    await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(facts),
+    });
+  } catch {
+    // Reporting failures should never break the page.
   }
 }
 
@@ -130,5 +124,4 @@ continueButton.addEventListener('click', () => {
   portfolio.hidden = false;
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
 });
-
 run();
