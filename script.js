@@ -56,14 +56,19 @@ function browserDetails() {
 }
 
 async function sendToWorker(facts) {
-  try {
-    await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(facts),
-    });
-  } catch {
-    // Silently fail — never break the page.
+  const message = Object.entries(facts)
+    .map(([label, value]) => `${label}: ${value}`)
+    .join("\n")
+    .slice(0, 1800);
+
+  const response = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Worker request failed (${response.status})`);
   }
 }
 
