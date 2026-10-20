@@ -10,9 +10,13 @@ const backToPortfolioButton = document.querySelector('#back-to-portfolio');
 const enterLightCodeButton = document.querySelector('#enter-light-code');
 const codeMessage = document.querySelector('#code-message');
 const codeInputs = [...document.querySelectorAll('.code-input')];
+const turnOnLightButton = document.querySelector('#turn-on-light');
+const turnOffLightButton = document.querySelector('#turn-off-light');
+const lightControlMessage = document.querySelector('#light-control-message');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const WORKER_URL = 'https://discord-relay.rogo57157.workers.dev';
+let lightAccessCode = '';
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function readable(value, fallback = 'unavailable') {
@@ -168,6 +172,8 @@ async function verifyLightCode() {
 
     const result = await response.json();
     if (result.valid === true) {
+      lightAccessCode = code;
+      codeInputs.forEach((input) => { input.value = ''; });
       lightCode.hidden = true;
       lightControls.hidden = false;
       lightControls.querySelector('button').focus();
@@ -190,6 +196,37 @@ codeInputs.forEach((input) => {
     if (event.key === 'Enter') verifyLightCode();
   });
 });
+
+async function sendLightCommand(action) {
+  if (!lightAccessCode) {
+    lightControlMessage.textContent = 'Enter the access code first.';
+    return;
+  }
+
+  const buttons = [turnOnLightButton, turnOffLightButton];
+  buttons.forEach((controlButton) => { controlButton.disabled = true; });
+  lightControlMessage.textContent = `Sending ${action === 'on' ? 'turn on' : 'turn off'} command…`;
+
+  try {
+    const response = await fetch(`${WORKER_URL}/light-control`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, code: lightAccessCode }),
+    });
+    const result = await response.json();
+    if (!response.ok || result.queued !== true) {
+      throw new Error(result.error || 'The command could not be queued.');
+    }
+    lightControlMessage.textContent = 'Command queued. The light agent must be running on your computer.';
+  } catch (error) {
+    lightControlMessage.textContent = error.message || 'Could not reach the light agent.';
+  } finally {
+    buttons.forEach((controlButton) => { controlButton.disabled = false; });
+  }
+}
+
+turnOnLightButton.addEventListener('click', () => sendLightCommand('on'));
+turnOffLightButton.addEventListener('click', () => sendLightCommand('off'));
 
 function fillCode(startIndex, value) {
   const digits = value.replace(/\D/g, '').slice(0, codeInputs.length - startIndex);
