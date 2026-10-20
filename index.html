@@ -24,7 +24,34 @@
           <a href="https://github.com/oklexar" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
           <a href="https://tiktok.com/@_lexar" target="_blank" rel="noreferrer">TikTok <span aria-hidden="true">↗</span></a>
           <a href="https://x.com/lunarshine584" target="_blank" rel="noreferrer">X <span aria-hidden="true">↗</span></a>
+          <button id="control-light" class="socials__wide" type="button">Control my Light <span aria-hidden="true">→</span></button>
         </nav>
+      </section>
+      <section id="light-code" class="light-code" hidden aria-labelledby="light-code-title">
+        <p class="eyebrow">// LIGHT CONTROL</p>
+        <h2 id="light-code-title">Enter your 6-digit code</h2>
+        <p class="light-code__hint">Enter the access code to continue.</p>
+        <div class="code-inputs" role="group" aria-label="6-digit code">
+          <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1" />
+          <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 2" />
+          <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 3" />
+          <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 4" />
+          <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 5" />
+          <input class="code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Digit 6" />
+        </div>
+        <div class="code-actions">
+          <button id="back-to-portfolio" class="code-back" type="button"><span aria-hidden="true">←</span> Back</button>
+          <button id="enter-light-code" class="code-back" type="button">Enter <span aria-hidden="true">→</span></button>
+        </div>
+        <p id="code-message" class="code-message" role="status" aria-live="polite"></p>
+      </section>
+      <section id="light-controls" class="light-code" hidden aria-labelledby="light-controls-title">
+        <p class="eyebrow">// LIGHT CONTROL</p>
+        <h2 id="light-controls-title">Light controls</h2>
+        <div class="light-controls__buttons">
+          <button class="code-back" type="button">Turn on Light</button>
+          <button class="code-back" type="button">Turn off Light</button>
+        </div>
       </section>
     </main>
     <script src="script.js" defer></script>

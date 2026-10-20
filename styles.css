@@ -169,6 +169,68 @@ body {
 }
 .socials a span { float: right; }
 .socials a:hover, .socials a:focus-visible { background: var(--green); color: #000; outline: none; }
+.socials__wide {
+  grid-column: 1 / -1;
+  border: 1px solid var(--green);
+  padding: 1.6rem 1.35rem;
+  color: var(--green);
+  background: transparent;
+  font: inherit;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-weight: bold;
+  letter-spacing: .04em;
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s, color .18s;
+}
+.socials__wide span { float: right; }
+.socials__wide:hover, .socials__wide:focus-visible { background: var(--green); color: #000; outline: none; }
+.light-code {
+  position: relative;
+  z-index: 1;
+  width: min(850px, 100%);
+  animation: arrive .7s ease both;
+}
+.light-code h2 {
+  margin: .75rem 0;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+}
+.light-code__hint {
+  margin: 0;
+  color: #b8fbc5;
+}
+.code-inputs {
+  display: flex;
+  gap: clamp(.45rem, 2vw, 1rem);
+  margin: 2rem 0;
+}
+.code-input {
+  width: clamp(2.75rem, 11vw, 4.5rem);
+  height: clamp(3.5rem, 14vw, 5rem);
+  border: 1px solid var(--dim-green);
+  border-radius: 0;
+  outline: none;
+  background: rgba(2, 12, 4, .88);
+  color: var(--green);
+  font: inherit;
+  font-size: clamp(1.5rem, 6vw, 2.5rem);
+  text-align: center;
+  caret-color: var(--green);
+  text-shadow: 0 0 8px rgba(65, 255, 105, .65);
+}
+.code-input:focus { border-color: var(--green); box-shadow: 0 0 12px rgba(65, 255, 105, .3); }
+.code-actions { display: flex; gap: .75rem; align-items: center; }
+.code-message { min-height: 1.5em; margin: 1rem 0 0; color: #ff7777; }
+.light-controls__buttons { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.code-back {
+  border: 1px solid var(--dim-green);
+  padding: .8rem 1rem;
+  color: var(--green);
+  background: rgba(2, 12, 4, .88);
+  font: inherit;
+  cursor: pointer;
+}
+.code-back:hover, .code-back:focus-visible { background: var(--green); color: #000; outline: none; }
 @keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes blink { 50% { opacity: 0; } }

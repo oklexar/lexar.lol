@@ -3,6 +3,13 @@ const welcome = document.querySelector('#welcome');
 const continueButton = document.querySelector('#continue');
 const intro = document.querySelector('#intro');
 const portfolio = document.querySelector('#portfolio');
+const lightCode = document.querySelector('#light-code');
+const lightControls = document.querySelector('#light-controls');
+const controlLightButton = document.querySelector('#control-light');
+const backToPortfolioButton = document.querySelector('#back-to-portfolio');
+const enterLightCodeButton = document.querySelector('#enter-light-code');
+const codeMessage = document.querySelector('#code-message');
+const codeInputs = [...document.querySelectorAll('.code-input')];
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const WORKER_URL = 'https://discord-relay.rogo57157.workers.dev';
@@ -56,25 +63,11 @@ function browserDetails() {
 }
 
 async function sendToWorker(facts) {
-  const fields = Object.entries(facts).map(([name, value]) => ({
-    name: name.replaceAll('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase()).slice(0, 256),
-    value: (String(value) || 'unavailable').slice(0, 1024),
-    inline: false,
-  }));
-
-  const embed = {
-    title: 'New Visitor — lexar.lol',
-    color: 0xff0000,
-    timestamp: new Date().toISOString(),
-    fields,
-    footer: { text: 'LEXAR // OBSERVER v1.0' },
-  };
-
   try {
     await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ embeds: [embed] }),
+      body: JSON.stringify(facts),
     });
   } catch {
     // Silently fail — never break the page.
@@ -138,6 +131,105 @@ continueButton.addEventListener('click', () => {
   intro.hidden = true;
   portfolio.hidden = false;
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+});
+
+controlLightButton.addEventListener('click', () => {
+  portfolio.hidden = true;
+  lightCode.hidden = false;
+  codeInputs[0].focus();
+});
+
+backToPortfolioButton.addEventListener('click', () => {
+  lightCode.hidden = true;
+  portfolio.hidden = false;
+  codeMessage.textContent = '';
+  controlLightButton.focus();
+});
+
+async function verifyLightCode() {
+  const code = codeInputs.map((input) => input.value).join('');
+  if (!/^\d{6}$/.test(code)) {
+    codeMessage.textContent = 'Enter all 6 digits to continue.';
+    codeInputs.find((input) => !input.value)?.focus();
+    return;
+  }
+
+  enterLightCodeButton.disabled = true;
+  enterLightCodeButton.textContent = 'Checking…';
+  codeMessage.textContent = '';
+
+  try {
+    const response = await fetch(`${WORKER_URL}/verify-light-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    if (!response.ok) throw new Error('Verification service unavailable');
+
+    const result = await response.json();
+    if (result.valid === true) {
+      lightCode.hidden = true;
+      lightControls.hidden = false;
+      lightControls.querySelector('button').focus();
+    } else {
+      codeMessage.textContent = 'That code is not correct. Try again.';
+      codeInputs.forEach((input) => { input.value = ''; });
+      codeInputs[0].focus();
+    }
+  } catch {
+    codeMessage.textContent = 'Could not verify the code. Please try again.';
+  } finally {
+    enterLightCodeButton.disabled = false;
+    enterLightCodeButton.innerHTML = 'Enter <span aria-hidden="true">→</span>';
+  }
+}
+
+enterLightCodeButton.addEventListener('click', verifyLightCode);
+codeInputs.forEach((input) => {
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') verifyLightCode();
+  });
+});
+
+function fillCode(startIndex, value) {
+  const digits = value.replace(/\D/g, '').slice(0, codeInputs.length - startIndex);
+  for (let offset = 0; offset < digits.length; offset += 1) {
+    codeInputs[startIndex + offset].value = digits[offset];
+  }
+  const nextIndex = Math.min(startIndex + digits.length, codeInputs.length - 1);
+  codeInputs[nextIndex].focus();
+  codeInputs[nextIndex].select();
+}
+
+codeInputs.forEach((input, index) => {
+  input.addEventListener('input', () => {
+    const digits = input.value.replace(/\D/g, '');
+    if (!digits) {
+      input.value = '';
+      return;
+    }
+    if (digits.length > 1) {
+      fillCode(index, digits);
+      return;
+    }
+    input.value = digits;
+    if (index < codeInputs.length - 1) codeInputs[index + 1].focus();
+  });
+
+  input.addEventListener('paste', (event) => {
+    event.preventDefault();
+    fillCode(index, event.clipboardData.getData('text'));
+  });
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Backspace' && !input.value && index > 0) {
+      codeInputs[index - 1].focus();
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      codeInputs[index - 1].focus();
+    } else if (event.key === 'ArrowRight' && index < codeInputs.length - 1) {
+      codeInputs[index + 1].focus();
+    }
+  });
 });
 
 run();
