@@ -156,7 +156,7 @@ function updateLightAgentStatus(working) {
   lightAgentStatus.classList.toggle('is-working', working);
   lightAgentStatusText.textContent = working ? 'Working' : 'Offline';
   lightControlButtons.forEach((controlButton) => {
-    controlButton.disabled = !working;
+    controlButton.toggleAttribute('disabled', !working);
   });
 }
 
@@ -268,7 +268,7 @@ async function sendLightCommand(action) {
     lightControlMessage.textContent = error.message || 'Could not reach the light agent.';
   } finally {
     lightControlButtons.forEach((controlButton) => {
-      controlButton.disabled = !lightAgentWorking;
+      controlButton.toggleAttribute('disabled', !lightAgentWorking);
     });
   }
 }
@@ -331,7 +331,7 @@ async function requestLightSnapshot() {
     lightControlMessage.textContent = error.message || 'Could not capture a snapshot.';
   } finally {
     lightControlButtons.forEach((controlButton) => {
-      controlButton.disabled = !lightAgentWorking;
+      controlButton.toggleAttribute('disabled', !lightAgentWorking);
     });
   }
 }
