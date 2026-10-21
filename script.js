@@ -317,6 +317,9 @@ async function requestLightSnapshot() {
       if (!photoResponse.ok) {
         throw new Error(photoResult.error || 'Could not check snapshot status.');
       }
+      if (photoResult.photo?.error) {
+        throw new Error(`Snapshot failed: ${photoResult.photo.error}`);
+      }
       if (photoResult.photo?.url) {
         lightSnapshot.src = `${photoResult.photo.url}?request=${encodeURIComponent(requestId)}`;
         lightSnapshotFrame.hidden = false;
