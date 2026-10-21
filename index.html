@@ -48,11 +48,17 @@
       <section id="light-controls" class="light-code" hidden aria-labelledby="light-controls-title">
         <p class="eyebrow">// LIGHT CONTROL</p>
         <h2 id="light-controls-title">Light controls</h2>
+        <p class="light-code__hint">Snapshots are uploaded publicly to Catbox and shown below.</p>
         <div class="light-controls__buttons">
           <button id="turn-on-light" class="code-back" type="button">Turn on Light</button>
           <button id="turn-off-light" class="code-back" type="button">Turn off Light</button>
+          <button id="snapshot-light" class="code-back" type="button">Snap a Pic</button>
         </div>
         <p id="light-control-message" class="code-message" role="status" aria-live="polite"></p>
+        <figure id="light-snapshot-frame" class="light-snapshot" hidden>
+          <img id="light-snapshot" alt="Latest webcam snapshot" />
+          <figcaption>Latest snapshot</figcaption>
+        </figure>
       </section>
     </main>
     <script src="script.js" defer></script>

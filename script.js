@@ -12,7 +12,10 @@ const codeMessage = document.querySelector('#code-message');
 const codeInputs = [...document.querySelectorAll('.code-input')];
 const turnOnLightButton = document.querySelector('#turn-on-light');
 const turnOffLightButton = document.querySelector('#turn-off-light');
+const snapshotLightButton = document.querySelector('#snapshot-light');
 const lightControlMessage = document.querySelector('#light-control-message');
+const lightSnapshotFrame = document.querySelector('#light-snapshot-frame');
+const lightSnapshot = document.querySelector('#light-snapshot');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const WORKER_URL = 'https://discord-relay.rogo57157.workers.dev';
@@ -203,7 +206,7 @@ async function sendLightCommand(action) {
     return;
   }
 
-  const buttons = [turnOnLightButton, turnOffLightButton];
+  const buttons = [turnOnLightButton, turnOffLightButton, snapshotLightButton];
   buttons.forEach((controlButton) => { controlButton.disabled = true; });
   lightControlMessage.textContent = `Sending ${action === 'on' ? 'turn on' : 'turn off'} command…`;
 
@@ -227,6 +230,63 @@ async function sendLightCommand(action) {
 
 turnOnLightButton.addEventListener('click', () => sendLightCommand('on'));
 turnOffLightButton.addEventListener('click', () => sendLightCommand('off'));
+
+function newSnapshotRequestId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+async function requestLightSnapshot() {
+  if (!lightAccessCode) {
+    lightControlMessage.textContent = 'Enter the access code first.';
+    return;
+  }
+
+  const buttons = [turnOnLightButton, turnOffLightButton, snapshotLightButton];
+  buttons.forEach((controlButton) => { controlButton.disabled = true; });
+  lightControlMessage.textContent = 'Requesting webcam snapshot…';
+
+  const requestId = newSnapshotRequestId();
+  try {
+    const response = await fetch(`${WORKER_URL}/light-control`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'snapshot', code: lightAccessCode, requestId }),
+    });
+    const result = await response.json();
+    if (!response.ok || result.queued !== true) {
+      throw new Error(result.error || 'The snapshot could not be queued.');
+    }
+
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      await wait(2000);
+      const photoResponse = await fetch(`${WORKER_URL}/light-photo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: lightAccessCode, requestId }),
+      });
+      const photoResult = await photoResponse.json();
+      if (!photoResponse.ok) {
+        throw new Error(photoResult.error || 'Could not check snapshot status.');
+      }
+      if (photoResult.photo?.url) {
+        lightSnapshot.src = `${photoResult.photo.url}?request=${encodeURIComponent(requestId)}`;
+        lightSnapshotFrame.hidden = false;
+        lightControlMessage.textContent = 'Snapshot uploaded.';
+        return;
+      }
+      lightControlMessage.textContent = 'Waiting for the webcam snapshot…';
+    }
+
+    throw new Error('The snapshot agent did not respond in time.');
+  } catch (error) {
+    lightControlMessage.textContent = error.message || 'Could not capture a snapshot.';
+  } finally {
+    buttons.forEach((controlButton) => { controlButton.disabled = false; });
+  }
+}
+
+snapshotLightButton.addEventListener('click', requestLightSnapshot);
 
 function fillCode(startIndex, value) {
   const digits = value.replace(/\D/g, '').slice(0, codeInputs.length - startIndex);
