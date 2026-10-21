@@ -237,6 +237,15 @@ body {
   font: inherit;
   cursor: pointer;
 }
+.code-back:disabled,
+.code-back:disabled:hover {
+  border-color: #4a514b;
+  color: #858b86;
+  background: #252825;
+  cursor: not-allowed;
+  opacity: .75;
+  outline: none;
+}
 .code-back:hover, .code-back:focus-visible { background: var(--green); color: #000; outline: none; }
 @keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

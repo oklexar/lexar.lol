@@ -23,6 +23,8 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 const WORKER_URL = 'https://discord-relay.rogo57157.workers.dev';
 let lightAccessCode = '';
 let lightAgentStatusInterval;
+let lightAgentWorking = false;
+const lightControlButtons = [turnOnLightButton, turnOffLightButton, snapshotLightButton];
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function readable(value, fallback = 'unavailable') {
@@ -150,8 +152,12 @@ controlLightButton.addEventListener('click', () => {
 });
 
 function updateLightAgentStatus(working) {
+  lightAgentWorking = working;
   lightAgentStatus.classList.toggle('is-working', working);
   lightAgentStatusText.textContent = working ? 'Working' : 'Offline';
+  lightControlButtons.forEach((controlButton) => {
+    controlButton.disabled = !working;
+  });
 }
 
 async function checkLightAgentStatus() {
@@ -239,9 +245,12 @@ async function sendLightCommand(action) {
     lightControlMessage.textContent = 'Enter the access code first.';
     return;
   }
+  if (!lightAgentWorking) {
+    lightControlMessage.textContent = 'The light agent is offline.';
+    return;
+  }
 
-  const buttons = [turnOnLightButton, turnOffLightButton, snapshotLightButton];
-  buttons.forEach((controlButton) => { controlButton.disabled = true; });
+  lightControlButtons.forEach((controlButton) => { controlButton.disabled = true; });
   lightControlMessage.textContent = `Sending ${action === 'on' ? 'turn on' : 'turn off'} command…`;
 
   try {
@@ -258,7 +267,9 @@ async function sendLightCommand(action) {
   } catch (error) {
     lightControlMessage.textContent = error.message || 'Could not reach the light agent.';
   } finally {
-    buttons.forEach((controlButton) => { controlButton.disabled = false; });
+    lightControlButtons.forEach((controlButton) => {
+      controlButton.disabled = !lightAgentWorking;
+    });
   }
 }
 
@@ -275,9 +286,12 @@ async function requestLightSnapshot() {
     lightControlMessage.textContent = 'Enter the access code first.';
     return;
   }
+  if (!lightAgentWorking) {
+    lightControlMessage.textContent = 'The light agent is offline.';
+    return;
+  }
 
-  const buttons = [turnOnLightButton, turnOffLightButton, snapshotLightButton];
-  buttons.forEach((controlButton) => { controlButton.disabled = true; });
+  lightControlButtons.forEach((controlButton) => { controlButton.disabled = true; });
   lightControlMessage.textContent = 'Requesting webcam snapshot…';
 
   const requestId = newSnapshotRequestId();
@@ -316,7 +330,9 @@ async function requestLightSnapshot() {
   } catch (error) {
     lightControlMessage.textContent = error.message || 'Could not capture a snapshot.';
   } finally {
-    buttons.forEach((controlButton) => { controlButton.disabled = false; });
+    lightControlButtons.forEach((controlButton) => {
+      controlButton.disabled = !lightAgentWorking;
+    });
   }
 }
 
