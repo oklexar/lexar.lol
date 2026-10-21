@@ -24,6 +24,7 @@ const WORKER_URL = 'https://discord-relay.rogo57157.workers.dev';
 let lightAccessCode = '';
 let lightAgentStatusInterval;
 let lightAgentWorking = false;
+let lightSnapshotObjectUrl = '';
 const lightControlButtons = [turnOnLightButton, turnOffLightButton, snapshotLightButton];
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -321,7 +322,29 @@ async function requestLightSnapshot() {
         throw new Error(`Snapshot failed: ${photoResult.photo.error}`);
       }
       if (photoResult.photo?.url) {
-        lightSnapshot.src = `${photoResult.photo.url}?request=${encodeURIComponent(requestId)}`;
+        const imageResponse = await fetch(`${WORKER_URL}/light-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: lightAccessCode, requestId }),
+          cache: 'no-store',
+        });
+        if (!imageResponse.ok) {
+          let imageError = 'Could not load the uploaded image.';
+          try {
+            const details = await imageResponse.json();
+            imageError = details.error || imageError;
+          } catch {
+            // Keep the fallback message if the Worker returned non-JSON text.
+          }
+          throw new Error(imageError);
+        }
+        const imageBlob = await imageResponse.blob();
+        if (!imageBlob.type.startsWith('image/')) {
+          throw new Error('The Worker response was not image data.');
+        }
+        if (lightSnapshotObjectUrl) URL.revokeObjectURL(lightSnapshotObjectUrl);
+        lightSnapshotObjectUrl = URL.createObjectURL(imageBlob);
+        lightSnapshot.src = lightSnapshotObjectUrl;
         lightSnapshotFrame.hidden = false;
         lightControlMessage.textContent = 'Snapshot uploaded.';
         return;
