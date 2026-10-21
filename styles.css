@@ -222,6 +222,9 @@ body {
 .code-actions { display: flex; gap: .75rem; align-items: center; }
 .code-message { min-height: 1.5em; margin: 1rem 0 0; color: #ff7777; }
 .light-controls__buttons { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.light-snapshot { margin: 2rem 0 0; max-width: 850px; }
+.light-snapshot img { display: block; width: min(100%, 640px); border: 1px solid var(--dim-green); }
+.light-snapshot figcaption { margin-top: .6rem; color: #b8fbc5; font-size: .85rem; }
 .code-back {
   border: 1px solid var(--dim-green);
   padding: .8rem 1rem;
