@@ -247,6 +247,18 @@ body {
   outline: none;
 }
 .code-back:hover, .code-back:focus-visible { background: var(--green); color: #000; outline: none; }
+.light-controls__buttons .code-back:disabled,
+.light-controls__buttons .code-back:disabled:hover,
+.light-controls__buttons .code-back:disabled:focus-visible {
+  border-color: #59605a;
+  color: #929892;
+  background: #303430;
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: .55;
+  outline: none;
+}
 @keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes blink { 50% { opacity: 0; } }
