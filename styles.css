@@ -38,6 +38,32 @@ body {
   opacity: .19;
   background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(55, 255, 94, .2) 3px 4px);
 }
+.custom-banner {
+  position: fixed;
+  z-index: 3;
+  top: 1rem;
+  left: 50%;
+  width: min(850px, calc(100vw - 2rem));
+  padding: .8rem 1rem;
+  transform: translateX(-50%);
+  border: 1px solid var(--dim-green);
+  background: rgba(2, 12, 4, .96);
+  box-shadow: 0 0 18px rgba(65, 255, 105, .12);
+  text-shadow: none;
+}
+.custom-banner[hidden] { display: none; }
+.custom-banner__label {
+  color: var(--dim-green);
+  font-size: .7rem;
+  letter-spacing: .16em;
+}
+.custom-banner p {
+  margin: .35rem 0 0;
+  color: var(--green);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
 .terminal__content {
   position: relative;
   z-index: 1;

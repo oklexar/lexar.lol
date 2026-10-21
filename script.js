@@ -1,4 +1,6 @@
 const output = document.querySelector('#output');
+const customBanner = document.querySelector('#custom-banner');
+const customBannerMessage = document.querySelector('#custom-banner-message');
 const welcome = document.querySelector('#welcome');
 const continueButton = document.querySelector('#continue');
 const intro = document.querySelector('#intro');
@@ -27,6 +29,22 @@ let lightAgentWorking = false;
 let lightSnapshotObjectUrl = '';
 const lightControlButtons = [turnOnLightButton, turnOffLightButton, snapshotLightButton];
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function refreshCustomBanner() {
+  try {
+    const response = await fetch(`${WORKER_URL}/banner`, { cache: 'no-store' });
+    if (!response.ok) return;
+    const result = await response.json();
+    const message = typeof result.message === 'string' ? result.message : '';
+    customBannerMessage.textContent = message;
+    customBanner.hidden = message.length === 0;
+  } catch {
+    // The banner is optional; don't interrupt the page if the Worker is unavailable.
+  }
+}
+
+void refreshCustomBanner();
+window.setInterval(refreshCustomBanner, 30000);
 
 function readable(value, fallback = 'unavailable') {
   return value === undefined || value === null || value === '' ? fallback : String(value);

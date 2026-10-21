@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
     <title>lexar.lol</title>
-    <link rel="stylesheet" href="styles.css?v=20261021-buttons" />
+    <link rel="stylesheet" href="styles.css?v=20261021-banner" />
   </head>
   <body>
     <main class="terminal" aria-live="polite">
       <div class="scanlines" aria-hidden="true"></div>
+      <aside id="custom-banner" class="custom-banner" role="status" aria-live="polite" hidden>
+        <span class="custom-banner__label">// MESSAGE</span>
+        <p id="custom-banner-message"></p>
+      </aside>
       <section id="intro" class="terminal__content" aria-label="System information terminal">
         <p class="terminal__brand">LEXAR // OBSERVER v1.0</p>
         <div id="output" class="output"></div>
@@ -65,6 +69,6 @@
         </figure>
       </section>
     </main>
-    <script src="script.js?v=20261021-buttons" defer></script>
+    <script src="script.js?v=20261021-banner" defer></script>
   </body>
 </html>
