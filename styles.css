@@ -222,6 +222,10 @@ body {
 .code-actions { display: flex; gap: .75rem; align-items: center; }
 .code-message { min-height: 1.5em; margin: 1rem 0 0; color: #ff7777; }
 .light-controls__buttons { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.light-agent-status { display: flex; align-items: center; gap: .55rem; margin-top: 1rem; color: #b8fbc5; font-size: .9rem; }
+.light-agent-status__dot { width: .7rem; height: .7rem; border-radius: 50%; background: #ff4d4d; box-shadow: 0 0 9px rgba(255, 77, 77, .7); }
+.light-agent-status.is-working .light-agent-status__dot { background: #41ff69; box-shadow: 0 0 9px rgba(65, 255, 105, .8); }
+.light-agent-status.is-working { color: #41ff69; }
 .light-snapshot { margin: 2rem 0 0; max-width: 850px; }
 .light-snapshot img { display: block; width: min(100%, 640px); border: 1px solid var(--dim-green); }
 .light-snapshot figcaption { margin-top: .6rem; color: #b8fbc5; font-size: .85rem; }

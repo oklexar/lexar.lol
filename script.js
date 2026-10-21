@@ -16,10 +16,13 @@ const snapshotLightButton = document.querySelector('#snapshot-light');
 const lightControlMessage = document.querySelector('#light-control-message');
 const lightSnapshotFrame = document.querySelector('#light-snapshot-frame');
 const lightSnapshot = document.querySelector('#light-snapshot');
+const lightAgentStatus = document.querySelector('#light-agent-status');
+const lightAgentStatusText = document.querySelector('#light-agent-status-text');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const WORKER_URL = 'https://discord-relay.rogo57157.workers.dev';
 let lightAccessCode = '';
+let lightAgentStatusInterval;
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function readable(value, fallback = 'unavailable') {
@@ -146,7 +149,37 @@ controlLightButton.addEventListener('click', () => {
   codeInputs[0].focus();
 });
 
+function updateLightAgentStatus(working) {
+  lightAgentStatus.classList.toggle('is-working', working);
+  lightAgentStatusText.textContent = working ? 'Working' : 'Offline';
+}
+
+async function checkLightAgentStatus() {
+  if (!lightAccessCode) return;
+
+  try {
+    const response = await fetch(`${WORKER_URL}/light-status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: lightAccessCode }),
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new Error('Status unavailable');
+    const result = await response.json();
+    updateLightAgentStatus(result.online === true);
+  } catch {
+    updateLightAgentStatus(false);
+  }
+}
+
+function startLightAgentStatusChecks() {
+  clearInterval(lightAgentStatusInterval);
+  void checkLightAgentStatus();
+  lightAgentStatusInterval = setInterval(checkLightAgentStatus, 4000);
+}
+
 backToPortfolioButton.addEventListener('click', () => {
+  clearInterval(lightAgentStatusInterval);
   lightCode.hidden = true;
   portfolio.hidden = false;
   codeMessage.textContent = '';
@@ -179,6 +212,7 @@ async function verifyLightCode() {
       codeInputs.forEach((input) => { input.value = ''; });
       lightCode.hidden = true;
       lightControls.hidden = false;
+      startLightAgentStatusChecks();
       lightControls.querySelector('button').focus();
     } else {
       codeMessage.textContent = 'That code is not correct. Try again.';
