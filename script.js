@@ -339,7 +339,7 @@ async function requestLightSnapshot() {
       if (photoResult.photo?.error) {
         throw new Error(`Snapshot failed: ${photoResult.photo.error}`);
       }
-      if (photoResult.photo?.url) {
+      if (photoResult.photo?.ready) {
         const imageResponse = await fetch(`${WORKER_URL}/light-image`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -364,7 +364,7 @@ async function requestLightSnapshot() {
         lightSnapshotObjectUrl = URL.createObjectURL(imageBlob);
         lightSnapshot.src = lightSnapshotObjectUrl;
         lightSnapshotFrame.hidden = false;
-        lightControlMessage.textContent = 'Snapshot uploaded.';
+        lightControlMessage.textContent = 'Snapshot ready.';
         return;
       }
       lightControlMessage.textContent = 'Waiting for the webcam snapshot…';
