@@ -5,6 +5,12 @@
   --black: #020302;
 }
 
+@font-face {
+  font-family: "IBM BIOS";
+  src: url("AcPlus_IBM_BIOS.ttf") format("truetype");
+  font-display: swap;
+}
+
 * { box-sizing: border-box; }
 html, body { min-height: 100%; }
 body {
@@ -178,12 +184,13 @@ body {
 }
 .socials {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 2.75rem;
   max-width: 850px;
 }
-.socials a {
+.socials a,
+.socials__item {
   border: 1px solid var(--green);
   padding: 1.6rem 1.35rem;
   color: var(--green);
@@ -194,7 +201,28 @@ body {
   transition: background .18s, color .18s;
 }
 .socials a span { float: right; }
-.socials a:hover, .socials a:focus-visible { background: var(--green); color: #000; outline: none; }
+.socials__arrow { float: right; }
+.socials__item {
+  border-color: #ff4da6;
+  background: rgba(255, 77, 166, .08);
+  color: #ff75b8;
+  font-family: "IBM BIOS", "Courier New", monospace;
+  font-weight: normal;
+  font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+  cursor: pointer;
+  text-align: left;
+  text-shadow: 0 0 7px rgba(255, 77, 166, .9), 0 0 16px rgba(255, 77, 166, .55);
+  box-shadow: 0 0 8px rgba(255, 77, 166, .5), inset 0 0 10px rgba(255, 77, 166, .12);
+  transition: background .18s, color .18s, box-shadow .18s;
+}
+.socials__label { font-size: .88em; }
+.socials a:hover, .socials a:focus-visible,
+.socials__item:hover, .socials__item:focus-visible {
+  background: #ff4da6;
+  color: #000;
+  outline: 1px solid #ff4da6;
+  box-shadow: 0 0 12px rgba(255, 77, 166, .9), 0 0 26px rgba(255, 77, 166, .55);
+}
 .socials__wide {
   grid-column: 1 / -1;
   border: 1px solid var(--green);
