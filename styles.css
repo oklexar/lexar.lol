@@ -203,6 +203,7 @@ body {
 .socials a span { float: right; }
 .socials__arrow { float: right; }
 .socials__item {
+  position: relative;
   background: rgba(255, 77, 166, .08);
   font-family: "IBM BIOS", "Courier New", monospace;
   font-weight: normal;
@@ -222,12 +223,50 @@ body {
   font-size: .88em;
 }
 .socials a .socials__arrow { float: right; }
-.socials a:hover, .socials a:focus-visible,
+.socials a:not(.socials__item):hover,
+.socials a:not(.socials__item):focus-visible {
+  background: var(--green);
+  color: #000;
+  outline: none;
+}
 .socials__item:hover, .socials__item:focus-visible {
   background: #ff4da6;
   color: #000;
   outline: 1px solid #ff4da6;
   box-shadow: 0 0 12px rgba(255, 77, 166, .9), 0 0 26px rgba(255, 77, 166, .55);
+}
+.socials a .socials__tooltip {
+  position: absolute;
+  z-index: 4;
+  bottom: calc(100% + .65rem);
+  left: 50%;
+  display: block;
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 2rem));
+  padding: .55rem .75rem;
+  transform: translate(-50%, .25rem);
+  border: 1px solid #ff4da6;
+  background: #10060c;
+  color: #ffb2d4;
+  font-family: "Courier New", Courier, monospace;
+  font-size: .82rem;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-height: 1.35;
+  text-align: center;
+  text-shadow: 0 0 7px rgba(255, 77, 166, .75);
+  box-shadow: 0 0 12px rgba(255, 77, 166, .5);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .12s, transform .12s, visibility .12s;
+}
+.socials a.socials__item .socials__tooltip { float: none; }
+.socials__item:hover .socials__tooltip,
+.socials__item:focus-visible .socials__tooltip {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  visibility: visible;
 }
 .socials__wide {
   grid-column: 1 / -1;
