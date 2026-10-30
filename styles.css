@@ -203,9 +203,7 @@ body {
 .socials a span { float: right; }
 .socials__arrow { float: right; }
 .socials__item {
-  border-color: #ff4da6;
   background: rgba(255, 77, 166, .08);
-  color: #ff75b8;
   font-family: "IBM BIOS", "Courier New", monospace;
   font-weight: normal;
   font-size: clamp(1.05rem, 2.2vw, 1.5rem);
@@ -215,7 +213,15 @@ body {
   box-shadow: 0 0 8px rgba(255, 77, 166, .5), inset 0 0 10px rgba(255, 77, 166, .12);
   transition: background .18s, color .18s, box-shadow .18s;
 }
-.socials__label { font-size: .88em; }
+.socials a.socials__item {
+  border-color: #ff4da6;
+  color: #ff75b8;
+}
+.socials a .socials__label {
+  float: none;
+  font-size: .88em;
+}
+.socials a .socials__arrow { float: right; }
 .socials a:hover, .socials a:focus-visible,
 .socials__item:hover, .socials__item:focus-visible {
   background: #ff4da6;
